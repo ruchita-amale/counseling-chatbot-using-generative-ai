@@ -6,6 +6,7 @@ model_path = "./BERT"  # Path to the directory containing the saved model
 model = BertForSequenceClassification.from_pretrained(model_path)
 tokenizer = BertTokenizer.from_pretrained(model_path)
 
+
 # Function to perform sentiment analysis
 def analyze_sentiment(prompt):
     # Tokenize the prompt
@@ -21,6 +22,7 @@ def analyze_sentiment(prompt):
     sentiment_label = "positive" if predicted_class == 1 else "negative"
 
     return sentiment_label
+
 
 # Example usage
 user_prompt = "I enjoyed the movie, it was great!"

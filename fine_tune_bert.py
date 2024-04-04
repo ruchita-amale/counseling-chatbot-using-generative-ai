@@ -1,56 +1,55 @@
-import os
+import numpy as np
 import torch
-from transformers import BertTokenizer, BertForSequenceClassification
-from transformers import TextDataset, DataCollatorWithPadding
-from transformers import Trainer, TrainingArguments
+import torch.nn as nn
+from transformers import BertTokenizer, BertForSequenceClassification, AdamW
+from torch.utils.data import DataLoader, TensorDataset
+from datasets import load_dataset
 
-# Function to read text files and concatenate the text
-def read_text_files(directory, encoding='utf-8'):
-    text = ""
-    for filename in os.listdir(directory):
-        if filename.endswith(".txt"):
-            with open(os.path.join(directory, filename), 'r', encoding=encoding) as file:
-                text += file.read() + " "  # Concatenate text from each file
-    return text
+# Set random seed for reproducibility
+np.random.seed(42)
+torch.manual_seed(42)
 
-# Directory containing the text files
-text_files_directory = "Data/Input"
-output_dir = "fine_tuned_BERT"
-
-# Read text from files
-corpus_text = read_text_files(text_files_directory, encoding='latin-1')
-
-# Tokenize the text using BERT tokenizer
+# Load pre-trained BERT tokenizer and model
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-tokenized_text = tokenizer(corpus_text, truncation=True, padding=True)
+model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=2)
 
-# Create a PyTorch dataset
-dataset = TextDataset(tokenized_text, tokenized_text)
+# Load IMDb and Amazon Reviews datasets
+imdb_dataset = load_dataset("imdb")
+amazon_dataset = load_dataset("amazon_polarity")
 
-# Define the model and training arguments
-model = BertForSequenceClassification.from_pretrained('bert-base-uncased')
-training_args = TrainingArguments(
-    per_device_train_batch_size=8,
-    num_train_epochs=3,
-    logging_dir='./logs',
-    logging_steps=10,
-    output_dir=output_dir,  # Directory to save the fine-tuned model
-)
+# Combine datasets
+combined_dataset = imdb_dataset['train']
 
-# Create a data collator
-data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
+# Shuffle combined dataset
+combined_dataset = combined_dataset.shuffle()
 
-# Create a Trainer instance
-trainer = Trainer(
-    model=model,
-    args=training_args,
-    train_dataset=dataset,
-    data_collator=data_collator,
-)
+# Tokenize input data
+inputs = tokenizer(combined_dataset['text'], padding=True, truncation=True, return_tensors='pt')
 
-# Fine-tune the model
-trainer.train()
+# Convert labels to tensors
+labels = torch.tensor(combined_dataset['label'])
 
-# Save the fine-tuned model and tokenizer
-model.save_pretrained(output_dir)
-tokenizer.save_pretrained(output_dir)
+# Create dataset and data loader
+dataset = TensorDataset(inputs.input_ids, inputs.attention_mask, labels)
+loader = DataLoader(dataset, batch_size=16, shuffle=True)
+
+# Define loss function and optimizer
+criterion = nn.CrossEntropyLoss()
+optimizer = AdamW(model.parameters(), lr=2e-5)
+
+# Fine-tune BERT model
+num_epochs = 3
+model.train()
+for epoch in range(num_epochs):
+    for batch in loader:
+        input_ids, attention_mask, labels = batch
+        optimizer.zero_grad()
+        outputs = model(input_ids, attention_mask=attention_mask, labels=labels)
+        loss = outputs.loss
+        loss.backward()
+        optimizer.step()
+
+# Save the fine-tuned model
+model_path = "sentiment_model"
+torch.save(model.state_dict(), model_path)
+print("Model saved at:", model_path)
