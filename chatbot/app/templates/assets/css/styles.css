@@ -1,0 +1,22 @@
+@media (min-width: 575.98px) {
+  .search-ele {
+    width: 60%;
+  }
+}
+
+@media (min-width: 576px) {
+  .message-box {
+    width: 60%;
+  }
+}
+
+.message-box {
+  top: 78px;
+  position: relative;
+  overflow-y: auto;
+  max-height: calc(100vh - 120px);
+}
+
+.search-ele {
+}
+
