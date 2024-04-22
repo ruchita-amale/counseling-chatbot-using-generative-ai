@@ -27,7 +27,7 @@ def preprocess_text(text):
     # Convert tokens to lowercase
     cleaned_text_lower = [token.lower() for token in cleaned_text]
 
-    # Join tokens into a single string with spaces
+    # Join tokens into a single string
     preprocessed_text = " ".join(cleaned_text_lower)
     
     return preprocessed_text
@@ -49,7 +49,7 @@ def preprocess_json_file(file_path):
 
 # Function to preprocess text files
 def preprocess_text_file(file_path):
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, "r") as f:
         text = f.read()
         preprocessed_text = preprocess_text(text)
         return preprocessed_text
