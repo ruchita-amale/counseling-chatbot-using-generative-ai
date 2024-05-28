@@ -1,0 +1,20 @@
+{% for entry in conversation_history %}
+    {% if entry.user %}
+        <div class="card" id="user">
+            <div class="card-body">
+                <h4 class="card-title">You</h4>
+                <h6 class="text-muted card-subtitle mb-2">Subtitle</h6>
+                <p class="card-text">{{ entry.user }}</p><a class="card-link" href="#">Link</a><a class="card-link" href="#">Link</a>
+            </div>
+        </div>
+    {% endif %}
+    {% if entry.bot %}
+        <div class="card" id="guruji">
+            <div class="card-body">
+                <h4 class="card-title">Guruji</h4>
+                <h6 class="text-muted card-subtitle mb-2">Subtitle</h6>
+                <p class="card-text">{{ entry.bot }}</p><a class="card-link" href="#">Link</a><a class="card-link" href="#">Link</a>
+            </div>
+        </div>
+    {% endif %}
+{% endfor %}

@@ -1,28 +1,32 @@
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Talk to Guruji !</title>
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
-    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
-    <link rel="stylesheet" href="assets/fonts/fontawesome5-overrides.min.css">
-    <link rel="stylesheet" href="assets/css/Dark-NavBar-Navigation-with-Button.css">
-    <link rel="stylesheet" href="assets/css/Dark-NavBar-Navigation-with-Search.css">
-    <link rel="stylesheet" href="assets/css/Dark-NavBar.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/fontawesome-all.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/fontawesome5-overrides.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Dark-NavBar-Navigation-with-Button.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Dark-NavBar-Navigation-with-Search.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Dark-NavBar.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.bootstrap_4.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-    <link rel="stylesheet" href="assets/css/Navbar-Right-Links-Dark-icons.css">
-    <link rel="stylesheet" href="assets/css/Pretty-Search-Form-.css">
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Navbar-Right-Links-Dark-icons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Pretty-Search-Form-.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 
 <body>
     <div class="fixed-top">
         <nav class="navbar navbar-expand-md sticky-top navigation-clean-button navbar-light" style="height:80px;background-color:#37434d;color:#ffffff;">
-            <div class="container-fluid"><a class="navbar-brand" href="#"><i class="fa fa-globe"></i>&nbsp;Talk to Guruji !</a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#"><i class="fa fa-globe"></i>&nbsp;Talk to Guruji !</a>
+                <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1">
+                    <span class="visually-hidden">Toggle navigation</span>
+                    <span class="navbar-toggler-icon"></span>
+                </button>
                 <div class="collapse navbar-collapse" id="navcol-1">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item"><a class="nav-link active" style="color:#ffffff;" href="#"><i class="fa fa-sign-in"></i>&nbsp;Dashboard</a></li>
@@ -31,43 +35,99 @@
             </div>
         </nav>
     </div>
-    
+
     <div class="container message-box">
-        {% for entry in conversation_history %}
-            {% if entry.user %}
-                <div class="card" id="person">
-                    <div class="card-body">
-                        <h4 class="card-title">Title</h4>
-                        <h6 class="text-muted card-subtitle mb-2">Subtitle</h6>
-                        <p class="card-text">{{ entry.user }}</p><a class="card-link" href="#">Link</a><a class="card-link" href="#">Link</a>
-                    </div>
-                </div>
-            {% endif %}
-            {% if entry.bot %}
-                <div class="card" id="guruji">
-                    <div class="card-body">
-                        <h4 class="card-title">Title</h4>
-                        <h6 class="text-muted card-subtitle mb-2">Subtitle</h6>
-                        <p class="card-text">{{ entry.bot }}</p><a class="card-link" href="#">Link</a><a class="card-link" href="#">Link</a>
-                    </div>
-                </div>
-            {% endif %}
-        {% endfor %}
-    
+        {% include 'conversation_history.html' %}
     </div>
 
     <div class="container fixed-bottom col-12 search-ele" style="position: fixed-bottom;">
         <form action="/chat" method="post" class="search-form">
-            <div class="input-group"><span class="input-group-text"><i class="fa fa-search"></i></span><input class="form-control" type="text" name="user_input" id="user_input" placeholder="I am looking for.."><button class="btn btn-light" type="submit">Search </button></div>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fa fa-search"></i></span>
+                <input class="form-control" type="text" name="user_input" id="user_input" placeholder="I am looking for..">
+                <button class="btn btn-light" type="submit">Search</button>
+                <button type="button" id="mic-button" class="btn btn-light"><i class="fa fa-microphone"></i></button>
+            </div>
         </form>
     </div>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script src="assets/js/Ludens---1-Index-Table-with-Search--Sort-Filters-v20-Ludens---1-Index-Table-with-Search--Sort-Filters.js"></script>
-    <script src="assets/js/Ludens---1-Index-Table-with-Search--Sort-Filters-v20-Ludens---Material-UI-Actions.js"></script>
-</body>
+    <script src="{{ url_for('static', filename='js/Ludens---1-Index-Table-with-Search--Sort-Filters-v20-Ludens---1-Index-Table-with-Search--Sort-Filters.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/Ludens---1-Index-Table-with-Search--Sort-Filters-v20-Ludens---Material-UI-Actions.js') }}"></script>
 
+    <script>
+        $(document).ready(function() {
+            let mediaRecorder;
+            let audioChunks = [];
+
+            $('#mic-button').on('click', function() {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        mediaRecorder = new MediaRecorder(stream);
+                        mediaRecorder.start();
+
+                        mediaRecorder.ondataavailable = function(event) {
+                            audioChunks.push(event.data);
+                        };
+
+                        mediaRecorder.onstop = function() {
+                            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                            const formData = new FormData();
+                            formData.append('audio_data', audioBlob, 'recording.wav');
+
+                            // Send audio data to server for processing
+                            $.ajax({
+                                url: '/process_audio',
+                                method: 'POST',
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                success: function(response) {
+                                    // Set the value of #user_input to the processed text from the audio
+                                    $('#user_input').val(response.text);
+                                },
+                                error: function(jqXHR, textStatus, errorThrown) {
+                                    // Check if responseJSON is defined and contains an error message
+                                    if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
+                                        // Display the error message from the server response
+                                        alert('Error: ' + jqXHR.responseJSON.error);
+                                    } else {
+                                        // Display a generic error message
+                                        alert('An error occurred while processing the audio.');
+                                    }
+                                }
+                            });
+                        };
+
+                        setTimeout(() => {
+                            mediaRecorder.stop();
+                        }, 5000); // Stop recording after 5 seconds
+                    })
+                    .catch(error => console.error('Error accessing microphone:', error));
+            });
+            
+            $('.search-form').on('submit', function(event) {
+                event.preventDefault();
+                var user_input = $('#user_input').val();
+                $.ajax({
+                    url: '/chat',
+                    method: 'POST',
+                    data: { user_input: user_input },
+                    success: function(response) {
+                        $('.message-box').html(response);
+                        $('#user_input').val('');
+                    },
+                    error: function(error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
 </html>
